@@ -252,10 +252,10 @@
                         console.log(xhr.responseText);
                         try{
                             var json = JSON.parse(xhr.responseText);
-                            if(json.code){
-                                return failureCall(json.message+'('+json.code+')');
+                            if(json.status_code != 200){
+                                return failureCall(json.message+'('+json.status_code+')');
                             }else{
-                                var url = json.data.url;
+                                var url = json.image.url;
                                 successCall(url);
                             }
                         }catch(err){
@@ -271,10 +271,10 @@
             };
             // 开始上传
             xhr.open("POST", setting.self.url, true);
-            for(var key in setting.self.headers){
-                xhr.setRequestHeader(key, setting.self.headers[key]);
-            }
-            xhr.send(fileData);
+			var content = new FormData()
+			content.append("key", "a0aad7450c2452e16c0cea1780622d62");
+			content.append("source", helper.base64ToBlob(fileData));
+            xhr.send(content);
         },
         
         // 使用腾讯云存储时，适用的上传方法
@@ -607,4 +607,10 @@
     };
 })(jQuery);
 
-$.image.init();
+$.image.init({
+	target:'self',
+	quality: 0.7,
+	self: {
+		url: 'http://47.101.132.64:8888/api/1/upload'
+	}
+});
